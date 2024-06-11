@@ -7,19 +7,19 @@ using Microsoft.AspNetCore.Mvc;
 namespace kolokwium2.Controllers;
 
 [ApiController]
-[Route("api")]
-public class CharacterTitleController :ControllerBase
+[Route("api/[controller]/")]
+public class CharactersController :ControllerBase
 {
     private IDataService _dataService;
 
-    public CharacterTitleController(IDataService dataService)
+    public CharactersController(IDataService dataService)
     {
         _dataService = dataService;
     }
 
 
     [HttpGet]
-    [Route("/characters/{idCharacter}")]
+    [Route("{idCharacter}")]
     public async Task<ActionResult> GetCharacter(int idCharacter)
     {
 
@@ -59,6 +59,9 @@ public class CharacterTitleController :ControllerBase
     {
 
         var infoAboutItems = new AddItemDTO();
+        
+      
+        
         var weight = 0;
 
         var character = await _dataService.GetCharacter(characterId);
@@ -67,9 +70,7 @@ public class CharacterTitleController :ControllerBase
         {
             return NotFound($"character with given id{characterId} doesn't exist");
         }
-        
-        
-        
+          
         
         List<Backpack> items = new List<Backpack>();
                 
@@ -83,7 +84,12 @@ public class CharacterTitleController :ControllerBase
             }
 
             weight += item.Weight;
-           
+           infoAboutItems.ItemsDtos.Add(new ItemsDTO()
+           {
+               amount = idItem.liczba2,
+               itemId = idItem.liczba1,
+               characterId = character.id
+           });
             items.Add(new Backpack()
             {
                 CharacterId = character.id,
@@ -104,11 +110,8 @@ public class CharacterTitleController :ControllerBase
         await  _dataService.AddToEq(items);
         scope.Complete();
         }
-
-
-        return Created();
+      
+        return Created( "api/items",   infoAboutItems);
     }
-    
-    
     
 }
