@@ -80,7 +80,7 @@ public class CharactersController :ControllerBase
             var item = await _dataService.DoesItemExist(idItem.liczba1);
             if (item == null)
             {
-                return NotFound($"Item wit given id {idItem.liczba1} exist");
+                return NotFound($"Item wit given id {idItem.liczba1} doesn't exist");
             }
 
             weight += item.Weight;
