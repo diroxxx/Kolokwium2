@@ -78,7 +78,7 @@ public class CharactersController :ControllerBase
         {
             
             var item = await _dataService.DoesItemExist(idItem.liczba1);
-            if (item != null)
+            if (item == null)
             {
                 return NotFound($"Item wit given id {idItem.liczba1} exist");
             }
