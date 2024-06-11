@@ -1,4 +1,6 @@
-﻿using kolokwium2.DTOs;
+﻿using System.Transactions;
+using kolokwium2.DTOs;
+using kolokwium2.Models;
 using kolokwium2.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,6 +51,62 @@ public class CharacterTitleController :ControllerBase
                 aquiredAt = c.AcquiredAt
             }).ToList()
         }));
+    }
+
+    [HttpPost]
+    [Route("{characterId}/backpacks")]
+    public async Task<ActionResult> AddItems(int characterId, MainToAdd mainToAdd)
+    {
+
+        var infoAboutItems = new AddItemDTO();
+        var weight = 0;
+
+        var character = await _dataService.GetCharacter(characterId);
+
+        if (characterId == null)
+        {
+            return NotFound($"character with given id{characterId} doesn't exist");
+        }
+        
+        
+        
+        
+        List<Backpack> items = new List<Backpack>();
+                
+        foreach (var idItem in mainToAdd.addToEqs)
+        {
+            
+            var item = await _dataService.DoesItemExist(idItem.liczba1);
+            if (item != null)
+            {
+                return NotFound($"Item wit given id {idItem.liczba1} exist");
+            }
+
+            weight += item.Weight;
+           
+            items.Add(new Backpack()
+            {
+                CharacterId = character.id,
+                ItemId = item.Id,
+                Amount = idItem.liczba2
+            });
+        }
+
+        if ( character.MaxWeight < weight + character.CurrentWeight)
+        {
+            return BadRequest("Character doesn't have enought space");
+        }
+
+        
+      using  (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+      {
+          
+        await  _dataService.AddToEq(items);
+        scope.Complete();
+        }
+
+
+        return Created();
     }
     
     

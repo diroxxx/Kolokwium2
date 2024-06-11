@@ -29,6 +29,31 @@ public class DataService: IDataService
             .ToListAsync();
         return character;
     }
-    
-    
+
+    public async Task<Character> GetCharacter(int idCharacter)
+    {
+        return await _dataContext.Characters.FirstOrDefaultAsync(e => e.id == idCharacter);
+    }
+
+    public async Task<Item?> DoesItemExist(int idItem)
+    {
+        return await _dataContext.Items.FirstOrDefaultAsync(i => i.Id == idItem);
+    }
+
+    public async  Task<int> GetCharacterMaxWeight(int idCharacter)
+    {
+        throw new NotImplementedException();
+        
+    }
+
+    public Task<int> GetCharacterCurrentWeight(int idCharacter)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task AddToEq(IEnumerable<Backpack> backpacks)
+    {
+        await _dataContext.AddRangeAsync(backpacks);
+        await _dataContext.SaveChangesAsync();
+    }
 }
